@@ -1,4 +1,4 @@
-# Assembler_Simulator
+# Assembler Interpreter
 A simulator for a simple assembler interpreter that is a soultion to a codewars.com kata found <a href="https://www.codewars.com/kata/58e61f3d8ff24f774400002c/c">here</a> using the C language.
 I have solved it 4 years before using Javascript <a href="https://replit.com/@JoeSamir/Assembler-Interpreter">Here</a>.
 
