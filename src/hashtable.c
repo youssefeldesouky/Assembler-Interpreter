@@ -63,7 +63,7 @@ void hashtable_print(const hashtable_t *table){
         ht_entry *entry = table->table->data[i];
         if(!entry) continue;
         do{
-            printf("(%s, %llu)\n", entry->key, entry->value);
+            printf("(%s, %lu)\n", entry->key, entry->value);
             entry = entry->next;
         }while(entry);
     }

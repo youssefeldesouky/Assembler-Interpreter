@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include "dynamic_array.h"
 #include "hashtable.h"
+#include "helper.h"
 
 #define MAXLINE 100
 #define BUF_SIZE 100

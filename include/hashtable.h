@@ -6,6 +6,7 @@
 #define ASSEMBLER_HASHTABLE_H
 #include <stdint.h>
 #include "dynamic_array.h"
+#include "helper.h"
 
 #define ADD_CAP 8
 

@@ -4,8 +4,6 @@
 #include "hashtable.h"
 
 int main() {
-    int arr[] = {4, 7, 7, [3 ... 7]=4, 9, 0, -1, -3, -3};
-    int n = sizeof(arr) / sizeof(arr[0]);
     char *prgrm = "\
         mov   a,11           ; value1\n\
         mov   b, 3            ; value2\n\
@@ -21,8 +19,7 @@ int main() {
             mov   d, a        ; temp2\n\
             sub   d, c\n\
             ret\n\
-";
-
+    ";
     puts(assembler(prgrm));
     print_regs();
     return 0;

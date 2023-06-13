@@ -1,6 +1,5 @@
 #include "assembler.h"
 
-
 /**
  * @brief a status register that uses the same
  *        style of AVR SREG
@@ -157,7 +156,8 @@ void msg(const program_t *program, const char *message){
         else{
             if(isalpha(message[i])){
                 char _temp[100];
-                itoa(registers[get_reg_idx(message[i])], _temp, 10);
+                //itoa(registers[get_reg_idx(message[i])], _temp, 10);
+                snprintf(_temp, 100, "%d", registers[get_reg_idx(message[i])]);
                 for(uint32_t j = 0; _temp[j]; program->output_buffer[buffer_idx++] = _temp[j++]);
             }
         }
