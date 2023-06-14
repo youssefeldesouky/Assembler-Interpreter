@@ -1,3 +1,4 @@
+[![Try with Replit Badge](https://replit.com/badge?caption=Try%20with%20Replit)](https://replit.com/@JoeSamir/AssemblerSimulator)
 # Assembler Interpreter
 A simulator for a simple assembler interpreter that is a soultion to a codewars.com kata found <a href="https://www.codewars.com/kata/58e61f3d8ff24f774400002c/c">here</a> using the C language.
 I have solved it 4 years before using Javascript <a href="https://replit.com/@JoeSamir/Assembler-Interpreter">Here</a>.
@@ -70,6 +71,13 @@ I also wrote an implementation of Hashtables that takes `(string, uint64_t)` Key
 * `parse_programs` separates each line, removes comments, extracts labels from the string then refactors the remaining instruction lines to be used in the next step.
 * `run_program` passes each line to `parse_inst` which parses each instruction and executes it by calling the corresponding function which in turn keeps the results in the registers array.
 * Usually each program contains a `msg` instruction that can be used to output a combination of strings and register values, only if the program contains an `end` instruction, otherwise it returns a `-1` .
+
+### How to Run
+Just call `make` and the executable will be created in the build directory with `assembler` as its name.
+``` bash
+make
+./build/assembler
+```
 
 ### Notes
 * This implementation is far from perfect, I've done a fair share of manual unit tests to most of the units in the program, but it is not enough of course, so bugs and errors can happen here or there.
