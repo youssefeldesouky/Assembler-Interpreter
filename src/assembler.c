@@ -156,7 +156,7 @@ void msg(const program_t *program, const char *message){
         else{
             if(isalpha(message[i])){
                 char _temp[100];
-                //itoa(registers[get_reg_idx(message[i])], _temp, 10);
+                //itoa(registers[get_reg_idx(message[i])], _temp, 10); //Not POSIX Compliant
                 snprintf(_temp, 100, "%d", registers[get_reg_idx(message[i])]);
                 for(uint32_t j = 0; _temp[j]; program->output_buffer[buffer_idx++] = _temp[j++]);
             }
@@ -322,13 +322,16 @@ size_t refactor_line(char *str){
     str[idx] = 0;
     return idx;
 }
-
 void extract_labels(program_t *program){
     for(size_t i = 0; i < program->instructions->length; i++){
+        bool in_str = false;
         uint32_t idx = 0;
         char *line = list_get(program->instructions, i);
         while(line[idx]){
-            if(line[idx] == ':'){
+            if(line[idx] == '\''){
+                in_str = !inst_ptr;
+            }
+            if(line[idx] == ':' && !in_str){
                 line[idx] = '\0';
                 hashtable_add(program->labels, line, i);
                 line[idx] = ':';

@@ -93,7 +93,7 @@ void list_append(list_t *list, void *item){
 }
 
 void *list_get(list_t *list, size_t idx){
-    if(idx >= list->length || !list->length){
+    if(idx >= list->capacity || !list->length){
         return NULL;
     }
     return list->data[idx];
