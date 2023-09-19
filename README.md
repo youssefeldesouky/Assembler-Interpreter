@@ -83,7 +83,7 @@ $ ./build/assembler
 ```
 Or you can provide an assembly file to the command to run it, by providing its path as an argument.
 ``` bash
-$ ./build/assembler program/first_program.s
+$ ./build/assembler program/first_program.asm
 ```
 
 ### Notes
