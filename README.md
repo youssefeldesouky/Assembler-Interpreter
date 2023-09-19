@@ -73,10 +73,17 @@ I also wrote an implementation of Hashtables that takes `(string, uint64_t)` Key
 * Usually each program contains a `msg` instruction that can be used to output a combination of strings and register values, only if the program contains an `end` instruction, otherwise it returns a `-1` .
 
 ### How to Run
-Just call `make` and the executable will be created in the build directory with `assembler` as its name.
+Call `make` and the executable will be created in the build directory with `assembler` as its name.
 ``` bash
-make
-./build/assembler
+$ make
+```
+Then you can either run it without providing an assembly file as a command-line argument, which will run the `power_program` string by default
+``` bash
+$ ./build/assembler
+```
+Or you can provide an assembly file to the command to run it, by providing its path as an argument.
+``` bash
+$ ./build/assembler program/first_program.s
 ```
 
 ### Notes
