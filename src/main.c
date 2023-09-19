@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <stdint.h>
 #include "assembler.h"
-#include "hashtable.h"
 
 enum error_code { ERROR, OK };
 
@@ -133,7 +131,7 @@ char *power_program = "\
 //(for example ./build/assembler programs/first_program.s) to run the code inside it.
 int main(int argc, char ** argv) {
     char *program_buffer = NULL;
-    
+
     if(argc > 1){
         if (load_program_from_file(argv[1], &program_buffer) == OK){
             puts(assembler(program_buffer));
