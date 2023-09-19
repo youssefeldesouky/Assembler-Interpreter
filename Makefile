@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -I./include -std=c99
+CFLAGS=-Wall -Wextra -Wno-unused-result -I./include -std=c99
 SRCS=src
 INCS=include
 
