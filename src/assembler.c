@@ -180,6 +180,8 @@ char *assembler(const char *program_str){
     program->output_buffer = calloc(BUF_SIZE, sizeof(char));
     parse_program(program_str, program);
     run_program(program);
+    hashtable_clear(program->labels);
+    list_clear(program->instructions);
     return program->output_buffer;
 }
 
@@ -333,7 +335,7 @@ void extract_labels(program_t *program){
             }
             if(line[idx] == ':' && !in_str){
                 line[idx] = '\0';
-                hashtable_add(program->labels, line, i);
+                hashtable_set(program->labels, line, i);
                 line[idx] = ':';
                 if(idx == strlen(line) - 1){
                     list_remove(program->instructions, i);
@@ -362,7 +364,12 @@ void parse_program(const char *program_str, program_t *program_ptr){
 }
 
 void print_regs(){
+    puts("<========= Registers =========>");
     for(int i = 0; i < 26; i++){
-        printf("%c: %d\n", 'a' + i, registers[i]);
+        if (i > 0 && !(i % 2)){
+            putchar('\n');
+        }
+        printf("%c: %d\t\t", 'A' + i, registers[i]);   
     }
+    putchar('\n');
 }

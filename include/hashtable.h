@@ -30,22 +30,38 @@ typedef struct{
 hashtable_t *hashtable_init(void);
 
 /**
- * @brief adds a key-value pair to a hashtable
+ * @brief sets (Add/Modify) a key-value pair to a hashtable
  * @param table the table to add the pair to
  * @param key the string key of the pair
  * @param value the unsigned 64-Bit int value of the piar
  * @return void
  */
-void hashtable_add(hashtable_t *table, char *key, size_t value);
+void hashtable_set(hashtable_t *table, char *key, size_t value);
 
 /**
  * @brief gets a value corresponding to a key from a hashtable
  * @param table the table to be searched for the key
  * @param key the string key to be searched for
- * @return the value if found, if not it will return 0
+ * @return the value if found, if not, it will return 0
  *         and print an error message to the stderr file
  */
 size_t hashtable_get(hashtable_t *table, char *key);
+
+/**
+ * @brief removes a value corresponding to a key from a hashtable
+ * @param table the table to be searched for the key
+ * @param key the string key to be removed
+ * @return the value if found, if not, it will return 0
+ *         and print an error message to the stderr file
+ */
+size_t hashtable_remove(hashtable_t *table, char *key);
+
+/**
+ * @brief removes all the key-value pairs in a hashtable
+ * @param table the table to be cleared
+ * @return void
+ */
+void hashtable_clear(hashtable_t *table);
 
 /**
  * @brief prints all the key-value pairs in a hashtable

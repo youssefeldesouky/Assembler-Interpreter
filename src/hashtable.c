@@ -20,7 +20,7 @@ ht_entry *entry_create(char *key, size_t value){
     return entry;
 }
 
-void hashtable_add(hashtable_t *table, char *key, size_t value){
+void hashtable_set(hashtable_t *table, char *key, size_t value){
     list_t *list = table->table;
     if(table->length >= table->capacity){
         table->capacity += ADD_CAP;
@@ -32,12 +32,14 @@ void hashtable_add(hashtable_t *table, char *key, size_t value){
         table->length++;
         return;
     }
-
+    
     if(!strcmp(key, ((ht_entry *)list->data[hashed_key])->key)){
         ((ht_entry *)list->data[hashed_key])->value = value;
     }else{
+        ht_entry *current_last_entry = list->data[hashed_key];
         ht_entry *next_entry = entry_create(key, value);
-        ((ht_entry *)list->data[hashed_key])->next = next_entry;
+        for(; current_last_entry->next; (current_last_entry = current_last_entry->next));
+        current_last_entry->next = next_entry;
         table->length++;
     }
 }
@@ -47,15 +49,63 @@ size_t hashtable_get(hashtable_t *table, char *key){
     list_t *list = table->table;
 
     ht_entry *entry = list->data[hashed_key];
-    if(!entry){
-        fprintf(stderr, "Error: Key not found!");
-        return 0;
-    }
-
+    
     while(entry && strcmp(entry->key, key) != 0){
         entry = entry->next;
     }
+
+    if(!entry){
+        fprintf(stderr, "Error: Key not found!\n");
+        return 0;
+    }
     return entry->value;
+}
+
+size_t hashtable_remove(hashtable_t *table, char *key){
+    size_t hashed_key = table->hashing_func(key, table->capacity);
+    list_t *list = table->table;
+    size_t value = 0;
+
+    ht_entry *entry = list->data[hashed_key];
+    ht_entry *previous_entry = NULL;
+
+    while (entry && strcmp(entry->key, key) != 0){
+        previous_entry = entry;
+        entry = entry->next;
+    }
+
+    if(!entry){
+        fprintf(stderr, "Error: Key not found!\n");
+        return 0;
+    }
+
+    value = entry->value;
+
+    if(previous_entry){
+        previous_entry->next = entry->next;
+        free(entry->key);
+        free(entry);
+    }else{
+        list->data[hashed_key] = entry->next;
+        free(entry->key);
+        free(entry);
+    }
+    return value;
+}
+
+void hashtable_clear(hashtable_t *table){
+    for(size_t i = 0; i < table->table->capacity; i++){
+        ht_entry *entry = table->table->data[i];
+        ht_entry *next_entry = NULL;
+        if(!entry) continue;
+        do{
+            next_entry = entry->next;
+            hashtable_remove(table, entry->key);
+            entry = next_entry;
+        }while(entry);
+    }
+    list_clear(table->table);
+    free(table);
 }
 
 void hashtable_print(const hashtable_t *table){

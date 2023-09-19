@@ -263,8 +263,8 @@ void run_program(const program_t *program);
 char *assembler(const char *program_str);
 
 /**
- * @brief prints the current value of the registers
- * @return the length of the line copied
+ * @brief prints the current values of the registers
+ * @return void
  */
 void print_regs(void);
 
