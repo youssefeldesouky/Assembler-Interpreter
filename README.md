@@ -3,8 +3,8 @@
 A simulator for a simple assembler interpreter that is a soultion to a codewars.com kata found <a href="https://www.codewars.com/kata/58e61f3d8ff24f774400002c/c">here</a> using the C language.
 I have solved it 4 years before using Javascript <a href="https://replit.com/@JoeSamir/Assembler-Interpreter">Here</a>.
 
-## Kata Description
-This description is taken from the Author of the Kata
+## Problem Description
+This description is taken from the Author of the Kata (Problem).
 We want to create an interpreter of assembler which will support the following instructions:
 
 * `mov x, y` - copy y (either an integer or the value of a register) into register x.
@@ -82,4 +82,3 @@ make
 ### Notes
 * This implementation is far from perfect, I've done a fair share of manual unit tests to most of the units in the program, but it is not enough of course, so bugs and errors can happen here or there.
 * I used `sscanf` instead of the far superior regex expressions library, due to coding in Windows, which doesn't have the Linux `regex` library, but I may use PCRE later instead.
-* Currently you need to supply the program string in the main.c source file, because that is the requirement of the Solution to the Kata. Hopefully I will make it read from a text file instead, to make it easier to use.
