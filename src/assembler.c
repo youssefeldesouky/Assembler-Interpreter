@@ -182,6 +182,8 @@ char *assembler(const char *program_str){
     run_program(program);
     hashtable_clear(program->labels);
     list_clear(program->instructions);
+    free(program);
+    reset_registers();
     return program->output_buffer;
 }
 
@@ -363,7 +365,15 @@ void parse_program(const char *program_str, program_t *program_ptr){
     extract_labels(program_ptr);
 }
 
-void print_regs(){
+void reset_registers(){
+    for(int i = 0; i < 26; i++){
+        registers[i] = 0;
+    }
+    inst_ptr = tiny_stack = 0;
+    end_reached = subroutine_called = erroneous_ret = false;
+}
+
+void print_registers(){
     puts("<========= Registers =========>");
     for(int i = 0; i < 26; i++){
         if (i > 0 && !(i % 2)){

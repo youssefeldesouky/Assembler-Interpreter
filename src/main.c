@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "assembler.h"
 
-enum error_code { ERROR, OK };
+enum error_code { READ_ERROR, READ_OK };
 
 enum error_code load_program_from_file(char *program_path, char **output_buffer);
 
@@ -133,17 +133,15 @@ int main(int argc, char ** argv) {
     char *program_buffer = NULL;
 
     if(argc > 1){
-        if (load_program_from_file(argv[1], &program_buffer) == OK){
-            puts(assembler(program_buffer));
-        }else{
+        if (load_program_from_file(argv[1], &program_buffer) == READ_ERROR){
             return 1;
         }
     }else{
-        puts(assembler(power_program));
+        program_buffer = power_program;
     }
-
-    print_regs();
-    free(program_buffer);
+    
+    char *output = assembler(program_buffer);
+    puts(output);
     return 0;
 }
 
@@ -151,7 +149,7 @@ enum error_code load_program_from_file(char *program_path, char **output_buffer)
     FILE *f = fopen(program_path, "r");
     if(!f){
         fprintf(stderr, "Error! File does not exist!");
-        return ERROR;
+        return READ_ERROR;
     }
     fseek(f, 0, SEEK_END);
     long length = ftell(f);
@@ -159,10 +157,10 @@ enum error_code load_program_from_file(char *program_path, char **output_buffer)
     *output_buffer = malloc(length + 1);
     if(!(*output_buffer)){
         fprintf(stderr, "Error! File too big!");
-        return ERROR;
+        return READ_ERROR;
     }
     fread(*output_buffer, sizeof(char), length, f);
     fclose(f);
     (*output_buffer)[length] = '\0';
-    return OK;
+    return READ_OK;
 }

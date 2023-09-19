@@ -263,10 +263,16 @@ void run_program(const program_t *program);
 char *assembler(const char *program_str);
 
 /**
+ * @brief resets all the values of the registers
+ * @return void
+ */
+void reset_registers();
+
+/**
  * @brief prints the current values of the registers
  * @return void
  */
-void print_regs(void);
+void print_registers(void);
 
 /**
  * @brief reads a single line from a multiline
