@@ -178,12 +178,12 @@ char *assembler(const char *program_str){
     program->instructions = list_init();
     program->labels = hashtable_init();
     program->output_buffer = calloc(BUF_SIZE, sizeof(char));
+    reset_registers();
     parse_program(program_str, program);
     run_program(program);
     hashtable_clear(program->labels);
     list_clear(program->instructions);
     free(program);
-    reset_registers();
     return program->output_buffer;
 }
 

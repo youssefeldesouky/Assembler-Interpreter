@@ -139,9 +139,10 @@ int main(int argc, char ** argv) {
     }else{
         program_buffer = power_program;
     }
-    
+
     char *output = assembler(program_buffer);
     puts(output);
+    print_registers();
     return 0;
 }
 
