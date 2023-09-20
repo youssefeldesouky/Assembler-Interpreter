@@ -5,6 +5,7 @@
 #ifndef ASSEMBLER_HASHTABLE_H
 #define ASSEMBLER_HASHTABLE_H
 #include <stdint.h>
+#include <stdbool.h>
 #include "dynamic_array.h"
 #include "helper.h"
 
@@ -28,6 +29,13 @@ typedef struct{
  * @return a pointer to the initialized hashtable
  */
 hashtable_t *hashtable_init(void);
+
+/**
+ * @brief Rehashes every item inside the table
+ * @param table the table to be rehashed
+ * @return void
+ */
+void hashtable_rehash(hashtable_t *table);
 
 /**
  * @brief sets (Add/Modify) a key-value pair to a hashtable
@@ -64,17 +72,17 @@ size_t hashtable_remove(hashtable_t *table, char *key);
 void hashtable_clear(hashtable_t *table);
 
 /**
+ * @brief clears a table then frees memory of it
+ * @param table a pointer to the table to be freed
+ * @return void
+ */
+void hashtable_purge(hashtable_t **table);
+
+/**
  * @brief prints all the key-value pairs in a hashtable
  * @param table the table to be printed
  * @return void
  */
 void hashtable_print(const hashtable_t *table);
 
-/**
- * @brief hashes the given string key into a 64-Bit index
- * @param key the key to be hashed
- * @param capacity the current capacity of the table
- * @return the hashed key to be used as an index
- */
-size_t hash(char *key, size_t capacity);
 #endif //ASSEMBLER_HASHTABLE_H

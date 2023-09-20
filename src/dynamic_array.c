@@ -37,6 +37,7 @@ void list_clear(list_t *list){
 void list_purge(list_t **list){
     list_clear(*list);
     free((*list)->data);
+    free(*list);
     *list = NULL;
 }
 
@@ -44,7 +45,7 @@ void list_insert(list_t *list, size_t idx, void *item){
     if(idx >= list->capacity){
         int8_t error = list_expand(list, idx/ADD_CAP - list->capacity/ADD_CAP + 1);
         if(error == -1){
-            fprintf(stderr, "Error: Insufficient Memory!/"
+            fprintf(stderr, "Error: Insufficient Memory!"
                             "Cannot expand List. Item not added.\n");
             return;
         }
@@ -55,7 +56,7 @@ void list_insert(list_t *list, size_t idx, void *item){
 
 void list_remove(list_t *list, size_t idx){
     if(idx >= list-> length){
-        fprintf(stderr, "Error: Out of Bounds Access.\n");
+        fprintf(stderr, "Error: Out of Bounds Access!\n");
         return;
     }
     free(list->data[idx]);

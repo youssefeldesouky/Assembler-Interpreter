@@ -174,24 +174,32 @@ void run_program(const program_t *program){
 }
 
 char *assembler(const char *program_str){
-    program_t *program = malloc(sizeof(program_t));
-    program->instructions = list_init();
-    program->labels = hashtable_init();
-    program->output_buffer = calloc(BUF_SIZE, sizeof(char));
+    program_t program = {.instructions = list_init(),
+                         .labels = hashtable_init(),
+                         .output_buffer = calloc(BUF_SIZE, sizeof(char))
+                        };
     reset_registers();
-    parse_program(program_str, program);
-    run_program(program);
-    hashtable_clear(program->labels);
-    list_clear(program->instructions);
-    free(program);
-    return program->output_buffer;
+    parse_program(program_str, &program);
+    run_program(&program);
+    hashtable_purge(&program.labels);
+    list_purge(&program.instructions);
+    return program.output_buffer;
 }
 
 void parse_inst(const program_t *program, const char *inst){
-    char operator[5], operand_1[99], operand_2[99];
+    char operator[5], operand_1[100], operand_2[100];
     sscanf(inst, "%[^ ]%*c%[^ ]%*c%[^\n]", operator, operand_1, operand_2);
+    strtolower(operator);
+    strtolower(operand_1);
+    strtolower(operand_2);
     if(!strcmp(operator, "mov")){
+        if(strlen(ltrim(rtrim(operand_1))) > 1){
+            goto ENDL;
+        }
         if(isalpha(operand_2[0])){
+             if(strlen(ltrim(rtrim(operand_2))) > 1){
+            goto ENDL;
+        }
             mov(operand_1[0], operand_2[0]);
         }else{
             int32_t _temp;
@@ -280,6 +288,9 @@ void parse_inst(const program_t *program, const char *inst){
     }
     else if(!strcmp(operator, "end")){
         end();
+    }else{
+ENDL:   fprintf(stderr, "Error: Unknown Instruction (%s)!\n", inst);
+        end();
     }
 }
 
@@ -355,7 +366,13 @@ void extract_labels(program_t *program){
 
 void parse_program(const char *program_str, program_t *program_ptr){
     char buffer[MAXLINE];
+    // A copy is need because read_line() move the pointer passed
+    // ahead with every call, hence the original string is unusable
+    // after the program is read using read_line().
     char *program_copy = strdup(program_str);
+    // This pointer is needed, to keep track of the beginning of
+    // the string for it to be freed later.
+    char *program_copy_start = program_copy;
     while(*program_copy){
         if(!read_line(&program_copy, buffer, MAXLINE)) continue;
         if(refactor_line(buffer)){
@@ -363,6 +380,7 @@ void parse_program(const char *program_str, program_t *program_ptr){
         }
     }
     extract_labels(program_ptr);
+    free(program_copy_start);
 }
 
 void reset_registers(){

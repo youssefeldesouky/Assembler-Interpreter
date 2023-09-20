@@ -126,6 +126,8 @@ char *power_program = "\
         ret\n\
     ";
 
+void hashtable_rehash_element(hashtable_t *table, char *key, size_t previous_capacity);
+
 //Either run the program without a command-line argument, to run one of the programs
 //Define above, or run it with a command-line argument of an assembly file
 //(for example ./build/assembler programs/first_program.s) to run the code inside it.
