@@ -22,5 +22,5 @@ fibo:
     ret
 
 print:
-    msg     "fibo(", a, ") = ", b
+    msg     "fibo(", a, ') = ', b
     ret

@@ -351,7 +351,7 @@ size_t refactor_line(char *str){
         if(!in_inst && isalpha(*ptr)){
             in_inst = true;
         }
-        if(*ptr == '\'' && *(ptr-1) != '\\'){
+        if((*ptr == '\'' || *ptr == '\"') && *(ptr-1) != '\\'){
             in_str = !in_str;
         }
         if(in_inst){
