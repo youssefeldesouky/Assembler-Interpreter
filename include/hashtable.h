@@ -10,6 +10,7 @@
 #include "helper.h"
 
 #define ADD_CAP 8
+#define LOAD_FACTOR 0.75f
 
 typedef struct ht_entry{
     char *key;

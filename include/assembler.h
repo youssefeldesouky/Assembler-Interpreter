@@ -16,6 +16,10 @@
 
 #define MAXLINE 100
 #define BUF_SIZE 100
+#define MAX_OP_SIZE 30
+
+#define STACK_SIZE 16
+#define REGISTER_FILE_SIZE 26
 
 typedef struct{
     list_t *instructions;
@@ -281,16 +285,16 @@ void print_registers(void);
  * @param str pointer to the multiline string
  * @param buf the buffer that will keep the line
  * @param n the size of the buffer including '\0'
- * @return the length of the line copied
+ * @return the end position of the line in the source string
  */
 size_t read_line(char **str, char *buf, size_t n);
 
 /**
  * @brief removes leading whitespace and multiple spaces
- *        to be ready for parsing by the instruction parser.
+ *        to be ready for parsing by the instruction parser,
  *        it also keeps output strings as is
  * @param str the line to be refactored
- * @return the new length of the line
+ * @return the end position of the word in the source string
  */
 size_t refactor_line(char *str);
 

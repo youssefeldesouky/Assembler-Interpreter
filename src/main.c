@@ -13,6 +13,7 @@ char *first_program = "\
     msg  '(5+1)/2 = ', a    ; output message\n\
     end\n\
     \n\
+    \n\
     function:\n\
         div  a, 2\n\
         ret\n";
@@ -133,10 +134,9 @@ void hashtable_rehash_element(hashtable_t *table, char *key, size_t previous_cap
 //(for example ./build/assembler programs/first_program.s) to run the code inside it.
 int main(int argc, char ** argv) {
     char *program_buffer = NULL;
-
     if(argc > 1){
         if (load_program_from_file(argv[1], &program_buffer) == READ_ERROR){
-            return 1;
+            return 0;
         }
     }else{
         program_buffer = power_program;

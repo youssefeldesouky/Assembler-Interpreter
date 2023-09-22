@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "helper.h": "c",
-        "dynamic_array.h": "c"
+        "dynamic_array.h": "c",
+        "hashtable.h": "c",
+        "assembler.h": "c"
     }
 }

@@ -4,7 +4,7 @@
 #include "hashtable.h"
 
 //Private Prototypes
-static inline void _pop_entry(hashtable_t *table, ht_entry *previous, ht_entry *current);
+static inline void pop_entry(hashtable_t *table, ht_entry *previous, ht_entry *current);
 static size_t hash(char *key, size_t capacity);
 
 hashtable_t *hashtable_init(){
@@ -27,10 +27,6 @@ ht_entry *entry_create(char *key, size_t value){
 void hashtable_set(hashtable_t *table, char *key, size_t value){
     list_t *list = table->table;
     
-    if(table->length >= table->capacity){
-        table->capacity += ADD_CAP;
-        hashtable_rehash(table);
-    }
 
     size_t hashed_key = table->hashing_func(key, table->capacity);
     ht_entry *entry = entry_create(key, value);
@@ -47,6 +43,12 @@ void hashtable_set(hashtable_t *table, char *key, size_t value){
         for(; current_last_entry->next; (current_last_entry = current_last_entry->next));
         current_last_entry->next = entry;
         table->length++;
+    }
+
+    float load_factor = table->length / (float)table->capacity;
+    if(load_factor > LOAD_FACTOR){
+        table->capacity += ADD_CAP;
+        hashtable_rehash(table);
     }
 }
 
@@ -106,7 +108,7 @@ size_t hashtable_remove(hashtable_t *table, char *key){
 
     value = entry->value;
 
-    _pop_entry(table, previous_entry, entry);
+    pop_entry(table, previous_entry, entry);
     return value;
 }
 
@@ -117,7 +119,7 @@ void hashtable_clear(hashtable_t *table){
         if(!entry) continue;
         do{
             next_entry = entry->next;
-            _pop_entry(table, NULL, entry);
+            pop_entry(table, NULL, entry);
             entry = next_entry;
         }while(entry);
     }
@@ -171,7 +173,7 @@ static size_t hash(char *key, size_t capacity){
  * @param current the entry to be removed
  * @return void
  */
-static inline void _pop_entry(hashtable_t *table, ht_entry *previous, ht_entry *current){
+static inline void pop_entry(hashtable_t *table, ht_entry *previous, ht_entry *current){
     if(!current){
         fprintf(stderr, "Error: Entry does not exist!\n");
         return;

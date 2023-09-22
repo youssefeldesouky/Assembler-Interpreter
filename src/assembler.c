@@ -19,12 +19,35 @@ union{
     };
 } s_reg;
 
-int32_t registers[26] = {0};
+int32_t registers[REGISTER_FILE_SIZE] = {0};
+
+size_t small_stack[STACK_SIZE] = {0};
+size_t stack_ptr = 0;
 size_t inst_ptr = 0;
-size_t tiny_stack = 0;
+
 bool end_reached = false;
 bool subroutine_called = false;
 bool erroneous_ret = false;
+bool incorrect_label = false;
+bool stack_limits_reached = false;
+
+void stack_push(size_t value){
+    if(stack_ptr >= STACK_SIZE){
+        fprintf(stderr, "Error: Stack is full!\n");
+        stack_limits_reached = true;
+        return;
+    }
+    small_stack[stack_ptr++] = value;
+}
+
+size_t stack_pop(void){
+    if(stack_ptr == 0){
+        fprintf(stderr, "Error: Stack is empty!\n");
+        stack_limits_reached = true;
+        return 0;
+    }
+    return small_stack[--stack_ptr];
+}
 
 uint8_t get_reg_idx(char reg){
     return (reg < 'a') ? reg - 'A' : reg - 'a';
@@ -79,7 +102,9 @@ void dec(char reg){
 }
 
 void jmp(const program_t *program, char *label){
-    inst_ptr = hashtable_get(program->labels, label) - 1;
+    size_t value = hashtable_get(program->labels, label);
+    incorrect_label = !value;
+    inst_ptr = value - 1;
 }
 
 void cmp(char *op1, char *op2){
@@ -124,7 +149,7 @@ void jl(const program_t *program, char *label){
 }
 
 void call(const program_t *program, char *label){
-    tiny_stack = inst_ptr + 1;
+    stack_push(inst_ptr + 1);
     subroutine_called = true;
     jmp(program, label);
 }
@@ -134,8 +159,8 @@ void ret(){
         erroneous_ret = true;
         return;
     }
-    inst_ptr = tiny_stack - 1; //decrement by 1 to make for the auto increment of the loop
-    subroutine_called = false;
+    inst_ptr = stack_pop() - 1; // decrement by 1 to make for the auto increment of the loop
+    subroutine_called = (stack_ptr) ? subroutine_called : false;
 }
 
 void end(){
@@ -146,7 +171,7 @@ void msg(const program_t *program, const char *message){
     bool in_str = false;
     size_t buffer_idx = 0;
     for(size_t i = 0; message[i]; i++){
-        if(message[i] == '\'' && message[i-1] != '\\'){
+        if((message[i] == '\'' || message[i] == '\"') && message[i-1] != '\\'){
             in_str = !in_str;
             continue; //skip quotes
         }
@@ -165,7 +190,8 @@ void msg(const program_t *program, const char *message){
 }
 
 void run_program(const program_t *program){
-    for(inst_ptr = 0; inst_ptr < program->instructions->length && !end_reached && !erroneous_ret; inst_ptr++){
+    for(inst_ptr = 0; inst_ptr < program->instructions->length && !end_reached\
+    && !erroneous_ret && !incorrect_label && !stack_limits_reached; inst_ptr++){
         parse_inst(program, (char *)list_get(program->instructions, inst_ptr));
     }
     if(!end_reached){
@@ -186,9 +212,13 @@ char *assembler(const char *program_str){
     return program.output_buffer;
 }
 
+
+
 void parse_inst(const program_t *program, const char *inst){
-    char operator[5], operand_1[100], operand_2[100];
-    sscanf(inst, "%[^ ]%*c%[^ ]%*c%[^\n]", operator, operand_1, operand_2);
+    
+    char operator[BUF_SIZE], operand_1[BUF_SIZE], operand_2[BUF_SIZE];
+    get_word(inst, operand_2, get_word(inst, operand_1, get_word(inst, operator, 0, BUF_SIZE), BUF_SIZE), BUF_SIZE);
+    //sscanf(inst, "%[^ ]%*c%[^ ]%*c%[^\n]", operator, operand_1, operand_2); I rate this function a 0/10 for smashing my stack.
     strtolower(operator);
     strtolower(operand_1);
     strtolower(operand_2);
@@ -197,10 +227,11 @@ void parse_inst(const program_t *program, const char *inst){
             goto ENDL;
         }
         if(isalpha(operand_2[0])){
-             if(strlen(ltrim(rtrim(operand_2))) > 1){
-            goto ENDL;
-        }
+            if(strlen(ltrim(rtrim(operand_2))) > 1){
+                goto ENDL;
+            }
             mov(operand_1[0], operand_2[0]);
+            
         }else{
             int32_t _temp;
             _temp = atoi(operand_2);
@@ -295,9 +326,10 @@ ENDL:   fprintf(stderr, "Error: Unknown Instruction (%s)!\n", inst);
 }
 
 size_t read_line(char **str, char *buf, size_t n){
-    char *ptr = *str;
     size_t idx = 0;
     bool in_comment = false;
+    char *ptr = *str;
+    
     while(*ptr != '\n' && idx < n){
         if(*ptr == ';') in_comment = true;
         if(!in_comment){
@@ -342,9 +374,10 @@ void extract_labels(program_t *program){
         bool in_str = false;
         uint32_t idx = 0;
         char *line = list_get(program->instructions, i);
+
         while(line[idx]){
-            if(line[idx] == '\''){
-                in_str = !inst_ptr;
+            if(line[idx] == '\'' || line[idx] == '\"'){
+                in_str = !in_str;
             }
             if(line[idx] == ':' && !in_str){
                 line[idx] = '\0';
@@ -355,8 +388,13 @@ void extract_labels(program_t *program){
                     i--;
                     break;
                 }else{
-                    for(; !isalpha(line[idx]); idx++);
-                    program->instructions->data[i] += idx;
+                    int j = 0;
+                    idx++;
+                    for(; line[idx] && isspace(line[idx]); idx++);
+                    for(; line[idx]; j++, idx++){
+                        line[j] = line[idx];
+                    }
+                    line[j] = '\0';
                 }
             }
             idx++;
@@ -366,29 +404,27 @@ void extract_labels(program_t *program){
 
 void parse_program(const char *program_str, program_t *program_ptr){
     char buffer[MAXLINE];
-    // A copy is need because read_line() move the pointer passed
-    // ahead with every call, hence the original string is unusable
-    // after the program is read using read_line().
-    char *program_copy = strdup(program_str);
-    // This pointer is needed, to keep track of the beginning of
-    // the string for it to be freed later.
-    char *program_copy_start = program_copy;
-    while(*program_copy){
-        if(!read_line(&program_copy, buffer, MAXLINE)) continue;
+    size_t cursor_pos = 0;
+    int size_of_line = 0;
+    do{
+        size_of_line = get_line(program_str, buffer, &cursor_pos, MAXLINE);
+        if(!cursor_pos) continue;
         if(refactor_line(buffer)){
             list_append(program_ptr->instructions, strdup(buffer));
         }
-    }
+    }while(size_of_line != -1);
     extract_labels(program_ptr);
-    free(program_copy_start);
+    
 }
 
 void reset_registers(){
     for(int i = 0; i < 26; i++){
         registers[i] = 0;
     }
-    inst_ptr = tiny_stack = 0;
-    end_reached = subroutine_called = erroneous_ret = false;
+    s_reg.value = 0;
+    inst_ptr = 0;
+    stack_ptr = 0;
+    end_reached = subroutine_called = erroneous_ret = stack_limits_reached = false;
 }
 
 void print_registers(){
