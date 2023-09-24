@@ -112,12 +112,12 @@ void cmp(char *op1, char *op2){
     if(isalpha(op1[0])){
         x = registers[get_reg_idx(op1[0])];
     }else{
-        x = atoi(op1);
+        x = (int32_t)strtol(op1, NULL, 0);
     }
     if(isalpha(op2[0])){
         y = registers[get_reg_idx(op2[0])];
     }else{
-        y = atoi(op2);
+        y = (int32_t)strtol(op2, NULL, 0);
     }
     _temp = x - y;
     s_reg.Z = (!_temp) ? 1 : 0;
@@ -234,7 +234,7 @@ void parse_inst(const program_t *program, const char *inst){
             
         }else{
             int32_t _temp;
-            _temp = atoi(operand_2);
+            _temp = (int32_t)strtol(operand_2, NULL, 0);
             mov_immediate(operand_1[0], _temp);
         }
     }else if(!strcmp(operator, "inc")){
@@ -246,7 +246,7 @@ void parse_inst(const program_t *program, const char *inst){
             add(operand_1[0], operand_2[0]);
         }else{
             int32_t _temp;
-            _temp = atoi(operand_2);
+            _temp = (int32_t)strtol(operand_2, NULL, 0);
             add_immediate(operand_1[0], _temp);
         }
     }
@@ -255,7 +255,7 @@ void parse_inst(const program_t *program, const char *inst){
             sub(operand_1[0], operand_2[0]);
         }else{
             int32_t _temp;
-            _temp = atoi(operand_2);
+            _temp = (int32_t)strtol(operand_2, NULL, 0);
             sub_immediate(operand_1[0], _temp);
         }
     }
@@ -264,7 +264,7 @@ void parse_inst(const program_t *program, const char *inst){
             mul(operand_1[0], operand_2[0]);
         }else{
             int32_t _temp;
-            _temp = atoi(operand_2);
+            _temp = (int32_t)strtol(operand_2, NULL, 0);
             mul_immediate(operand_1[0], _temp);
         }
     }
@@ -273,7 +273,7 @@ void parse_inst(const program_t *program, const char *inst){
             divide(operand_1[0], operand_2[0]);
         }else{
             int32_t _temp;
-            _temp = atoi(operand_2);
+            _temp = (int32_t)strtol(operand_2, NULL, 0);
             divide_immediate(operand_1[0], _temp);
         }
     }
